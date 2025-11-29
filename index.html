@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta content="width=device-width, initial-scale=1.0" name="viewport">
+    <title>Snake Game - Carregador XML</title>
+
+    <!-- Bootstrap CSS -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+
+    <!-- Nosso CSS -->
+    <link href="css\styles.css" rel="stylesheet">
+</head>
+<body>
+<div class="game-container">
+    <div class="game-header">
+        <h1><i class="fas fa-gamepad"></i> Snake Game</h1>
+        <p class="mb-0">Carregue um arquivo XML para jogar</p>
+    </div>
+
+    <!-- TELA DE UPLOAD -->
+    <div class="upload-screen" id="uploadScreen">
+        <div style="max-width: 500px; margin: 0 auto;">
+            <i class="fas fa-file-upload upload-icon"></i>
+            <h3 style="margin-bottom: 20px;">Carregue o arquivo XML do jogo</h3>
+            <p style="color: #666; margin-bottom: 30px;">
+                Selecione um arquivo XML contendo a configuração do Snake Game
+            </p>
+
+            <div class="mb-3">
+                <input accept=".xml" class="form-control" id="xmlFileInput" style="display: none;" type="file">
+                <button class="btn btn-primary btn-lg" onclick="document.getElementById('xmlFileInput').click()">
+                    <i class="fas fa-folder-open"></i> Escolher Arquivo XML
+                </button>
+            </div>
+
+            <div class="file-info" id="fileInfo" style="display: none;">
+                <i class="fas fa-file-code" style="color: #4caf50;"></i>
+                <div><strong id="fileName"></strong></div>
+                <small id="fileSize" style="color: #666;"></small>
+            </div>
+
+            <button class="btn btn-success btn-lg" id="loadGameBtn" onclick="loadGameFromFile()" style="display: none;">
+                <i class="fas fa-play-circle"></i> Carregar e Jogar
+            </button>
+
+            <button class="btn btn-info btn-lg mt-3" id="loadExampleBtn" onclick="loadSampleXML()"
+                    style="display: none;">
+                <i class="fas fa-magic"></i> Carregar XML de Exemplo
+            </button>
+
+            <div class="error-box" id="errorMessage" style="display: none;">
+                <i class="fas fa-exclamation-triangle"></i>
+                <strong>Erro ao carregar XML</strong>
+                <p id="errorText" style="margin: 10px 0 0 0;"></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- TELA DE CARREGAMENTO -->
+    <div id="loading" style="display: none; text-align: center; padding: 50px; font-size: 1.5rem; color: #3498db;">
+        <i class="fas fa-spinner fa-spin"></i> Processando arquivo XML...
+    </div>
+
+    <!-- TELA DO JOGO -->
+    <div class="game-content" id="gameContent" style="display: none;">
+        <div class="canvas-container">
+            <canvas id="gameCanvas"></canvas>
+            <div class="paused-text" id="pausedText">
+                <i class="fas fa-pause"></i> JOGO PAUSADO - Pressione ESPAÇO
+            </div>
+            <div class="game-over-overlay" id="gameOverOverlay">
+                <h2><i class="fas fa-skull-crossbones"></i> GAME OVER!</h2>
+                <p style="font-size: 1.5rem; margin: 20px 0;">Pontuação Final: <strong id="finalScore">0</strong></p>
+                <button class="btn btn-warning btn-lg" onclick="restartGame()">
+                    <i class="fas fa-redo"></i> Jogar Novamente
+                </button>
+            </div>
+        </div>
+
+        <div class="info-panel">
+            <div class="score-card">
+                <div class="score-label">PONTUAÇÃO</div>
+                <div class="score-value" id="scoreDisplay">0</div>
+                <div style="margin-top: 5px; font-size: 0.75rem;">
+                    High Score: <span id="highScore">0</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h6 class="mb-2"><i class="fas fa-info-circle"></i> Elementos</h6>
+                <div style="font-size: 0.75rem;">
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #00ff41;">█</span> Cobra
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #ff0000;">●</span> Maçã (<span id="pointsNormal">10</span>)
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #ffd700;">★</span> Dourada (<span id="pointsSpecial">50</span>)
+                    </div>
+                    <div>
+                        <span style="color: #4a5568;">■</span> Portais (atravessáveis)
+                    </div>
+                </div>
+            </div>
+
+            <div class="level-selector">
+                <h6 class="mb-1"><i class="fas fa-layer-group"></i> Dificuldade</h6>
+                <div class="btn-group w-100" role="group">
+                    <button class="btn btn-sm btn-outline-success level-btn active" onclick="setLevel(1)">Fácil</button>
+                    <button class="btn btn-sm btn-outline-warning level-btn" onclick="setLevel(2)">Médio</button>
+                    <button class="btn btn-sm btn-outline-danger level-btn" onclick="setLevel(3)">Difícil</button>
+                </div>
+            </div>
+
+            <button class="btn btn-success btn-game" id="startBtn" onclick="startGame()">
+                <i class="fas fa-play"></i> INICIAR
+            </button>
+
+            <button class="btn btn-warning btn-game" disabled id="pauseBtn" onclick="togglePause()">
+                <i class="fas fa-pause"></i> PAUSAR
+            </button>
+
+            <button class="btn btn-danger btn-game" onclick="restartGame()">
+                <i class="fas fa-redo"></i> REINICIAR
+            </button>
+
+            <button class="btn btn-secondary btn-game" onclick="loadNewXML()">
+                <i class="fas fa-file-upload"></i> NOVO XML
+            </button>
+
+            <div class="controls-card">
+                <div class="controls-title">
+                    <i class="fas fa-keyboard"></i> Controles
+                </div>
+                <div class="control-item">
+                    <span class="key-badge">SETAS</span>
+                    <span>Mover</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-badge">ESPAÇO</span>
+                    <span>Pausar</span>
+                </div>
+                <div class="control-item">
+                    <span class="key-badge">R</span>
+                    <span>Reiniciar</span>
+                </div>
+            </div>
+
+            <div class="stats-card">
+                <h6 class="mb-2"><i class="fas fa-info-circle"></i> Elementos</h6>
+                <div style="font-size: 0.75rem;">
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #00ff41;">█</span> Cobra
+                    </div>
+                    <div style="margin-bottom: 5px;">
+                        <span style="color: #ff0000;">●</span> Maçã (<span id="pointsNormal">10</span>)
+                    </div>
+                    <div>
+                        <span style="color: #ffd700;">★</span> Dourada (<span id="pointsSpecial">50</span>)
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- jQuery -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.0/jquery.min.js"></script>
+<!-- Bootstrap JS -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+<!-- Nosso JavaScript -->
+<script src="js\script.js"></script>
+</body>
+</html>

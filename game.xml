@@ -1,0 +1,47 @@
+<jogo>
+    <configuracao>
+        <!-- Alterar dimensoes do grid do canva -->
+        <largura>9</largura>
+        <altura>9</altura>
+        <tamanho_celula>25</tamanho_celula>
+        <!-- Considere a velocidade ao contrario; quanto maior, menor :P -->
+        <velocidade_inicial>120</velocidade_inicial>
+    </configuracao>
+    <cores>
+        <fundo>#1a1a2e</fundo>
+        <grade>#2d3748</grade>
+        <cobra>#00ff41</cobra>
+        <cabeca_cobra>#00cc33</cabeca_cobra>
+        <comida>#ff0000</comida>
+        <comida_especial>#ffd700</comida_especial>
+        <obstaculo>#8b4513</obstaculo>
+    </cores>
+    <pontuacao>
+        <comida_normal>10</comida_normal>
+        <comida_especial>50</comida_especial>
+    </pontuacao>
+    <cobra_inicial>
+        <tamanho>3</tamanho>
+        <posicao_x>5</posicao_x>
+        <posicao_y>5</posicao_y>
+        <direcao>direita</direcao>
+    </cobra_inicial>
+    <niveis>
+        <nivel id="1">
+            <nome>Fácil</nome>
+            <obstaculos>3</obstaculos>
+            <velocidade>1.0</velocidade>
+        </nivel>
+        <nivel id="2">
+            <nome>Médio</nome>
+            <obstaculos>5</obstaculos>
+            <velocidade>1.5</velocidade>
+        </nivel>
+        <nivel id="3">
+            <nome>Difícil</nome>
+            <obstaculos>8</obstaculos>
+            <velocidade>2.0</velocidade>
+        </nivel>
+    </niveis>
+</jogo>`;
+        }
